@@ -6,57 +6,61 @@ const Squirtle = {
     name: 'Squirtle',
     level: 5,
     hp: 20,
-    speed: 12,
-    status: 'normal',
-    type: 'cpu'
+    type: 'cpu',
+    moves: {
+        move_1: {
+            name: "Tackle",
+            power: 4
+        },
+        move_2: {
+            name: "Growl",
+            power: 0
+        }
+    }
 }
 
 class GameManager extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            player: {
-                speed: 0
-            },
-            cpu: {
-                speed: 0
-            }
-        }
+        this.state = {}
     }
 
-    getSpeed(player, speed, ) {
+    getAttack = (pokemon, move) => {
         let newState = this.state;
-        if (player === 'player') {
-            newState.player = { speed: speed }
-        } else {
-            newState.cpu = { speed: speed }
+        newState = {
+            attack: {
+                pokemon: pokemon,
+                move: move.name
+            }
         }
-
         this.setState(newState);
     }
 
-    whoAttacks() {
-        if (this.state.player.speed >= this.state.cpu.speed) {
-            console.log('Charmander attacks first!');
-            document.getElementById('message-board').innerText = 'Charmander attacks first!';
-        } else {
-            console.log('Enemy Squirtle attacks first...')
-            document.getElementById('message-board').innerText = 'Enemy Squirtle attacks first...';
+    showMessage = () => {
+        if(this.state.attack) {
+            return(
+                <div>
+                    <p>{`${this.state.attack.pokemon} uses ${this.state.attack.move}!`}</p>
+                </div>
+            )
         }
-    }
-
-    componentDidMount() {
-        this.whoAttacks();
+        return false;
     }
 
     render() {
         return(
             <div>
-                <Pokemon type='player' name={"Charmander"} level={5} hp={21} speed={14} status={'normal'} getSpeed={this.getSpeed.bind(this)}></Pokemon>
-                <Pokemon {...Squirtle} getSpeed={this.getSpeed.bind(this)}></Pokemon>
-                <div>
-                    <p id="message-board"></p>
-                </div>
+                <Pokemon 
+                    type='player' 
+                    name={"Charmander"} 
+                    level={5} 
+                    hp={21} 
+                    moves={{move_1: {name: "Scratch", power: 5},
+                            move_2: {name: "Leer", power: 0}}}
+                    sendAttack={this.getAttack.bind(this)}>
+                </Pokemon>
+                <Pokemon {...Squirtle} sendAttack={this.getAttack.bind(this)}></Pokemon>
+                { this.showMessage() }
             </div>
         )
     }
